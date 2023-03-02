@@ -65,7 +65,7 @@ def write_text_dict(fname: str, data: dict):
 def write_text(fname: str, data: list):
     if not data:
         return
-    with open(fname, 'w') as handle:
+    with open(fname, 'w', encoding='utf-8') as handle:
         handle.write('\n'.join(data))
 
 

@@ -77,6 +77,6 @@ def parse_xml_books(xml: str, typ):
 def parse_response(xml: str) -> dict:
     root = ET.fromstring(xml)
     res = {}
-    for resdoc in root.findall(f'response'):
+    for resdoc in root.findall('response'):
         res = getattrs(resdoc)
     return res

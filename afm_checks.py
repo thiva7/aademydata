@@ -1,5 +1,3 @@
-from http import client
-
 from zeep import Client
 
 URL = "http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl"

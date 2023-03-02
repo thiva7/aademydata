@@ -4,11 +4,11 @@ import parameters as par
 
 
 def issuer(parent, *, afm, country='GR', branch='0'):
-    issuer = SubElement(parent, "issuer")
-    SubElement(issuer, "vatNumber").text = afm
-    SubElement(issuer, "country").text = country
-    SubElement(issuer, "branch").text = branch
-    return issuer
+    iss = SubElement(parent, "issuer")
+    SubElement(iss, "vatNumber").text = afm
+    SubElement(iss, "country").text = country
+    SubElement(iss, "branch").text = branch
+    return iss
 
 
 def counter_part(parent, *, afm, country='GR', branch='0'):
@@ -20,13 +20,13 @@ def counter_part(parent, *, afm, country='GR', branch='0'):
 
 
 def header(parent, *, series, aa, date, typ, currency='EUR'):
-    header = SubElement(parent, "invoiceHeader")
-    SubElement(header, "series").text = series
-    SubElement(header, "aa").text = aa
-    SubElement(header, "issueDate").text = date
-    SubElement(header, "invoiceType").text = typ
-    SubElement(header, "currency").text = currency
-    return header
+    head = SubElement(parent, "invoiceHeader")
+    SubElement(head, "series").text = series
+    SubElement(head, "aa").text = aa
+    SubElement(head, "issueDate").text = date
+    SubElement(head, "invoiceType").text = typ
+    SubElement(head, "currency").text = currency
+    return head
 
 
 def payment(parent, *, typ, amount, info):
@@ -62,16 +62,16 @@ def lines(parent, *, data: par.InvData):
 
 
 def summary(parent, *, data: par.InvData):
-    sum = SubElement(parent, "invoiceSummary")
-    SubElement(sum, "totalNetValue").text = f'{data.total_value:.2f}'
-    SubElement(sum, "totalVatAmount").text = f'{data.total_vat:.2f}'
-    SubElement(sum, "totalWithheldAmount").text = '0.00'
-    SubElement(sum, "totalFeesAmount").text = '0.00'
-    SubElement(sum, "totalStampDutyAmount").text = '0.00'
-    SubElement(sum, "totalOtherTaxesAmount").text = '0.00'
-    SubElement(sum, "totalDeductionsAmount").text = '0.00'
-    SubElement(sum, "totalGrossValue").text = f'{data.total:.2f}'
+    isum = SubElement(parent, "invoiceSummary")
+    SubElement(isum, "totalNetValue").text = f'{data.total_value:.2f}'
+    SubElement(isum, "totalVatAmount").text = f'{data.total_vat:.2f}'
+    SubElement(isum, "totalWithheldAmount").text = '0.00'
+    SubElement(isum, "totalFeesAmount").text = '0.00'
+    SubElement(isum, "totalStampDutyAmount").text = '0.00'
+    SubElement(isum, "totalOtherTaxesAmount").text = '0.00'
+    SubElement(isum, "totalDeductionsAmount").text = '0.00'
+    SubElement(isum, "totalGrossValue").text = f'{data.total:.2f}'
     for cat_typ, val in data.total_per_cat.items():
         cat, typ = cat_typ
-        income_classification(sum, typ, cat, val)
-    return sum
+        income_classification(isum, typ, cat, val)
+    return isum

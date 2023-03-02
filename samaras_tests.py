@@ -42,8 +42,8 @@ if __name__ == '__main__':
     USER = env.str('SAM_USER')
     KEY = env.str('SAM_KEY')
     user = AadeUser(USER, KEY)
-    api = AadeApi(URL, user, True)
-    data = samaras_book_expenses(api, '2022-12-28', '2022-12-28')
+    sapi = AadeApi(URL, user, True)
+    book_data = samaras_book_expenses(sapi, '2022-12-28', '2022-12-28')
     # data = samaras_book_income(api, '2022-12-01', '2022-12-31', 'afms.txt')
-    for el in data:
+    for el in book_data:
         print(el, '\n')

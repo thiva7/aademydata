@@ -33,16 +33,16 @@ def is_uid_in_aade(api, uid, dat) -> bool:
 
 
 def xmlinvoice2json(invoice_xml, response):
-    inv = parse_xml_invoice(invoice_xml)
-    res = parse_response(response)
-    if res:
-        inv['uid'] = res['invoiceUid']
-        inv['mark'] = res['invoiceMark']
-    head = inv['invoice']['invoiceHeader']
+    invoice = parse_xml_invoice(invoice_xml)
+    resp = parse_response(response)
+    if resp:
+        invoice['uid'] = resp['invoiceUid']
+        invoice['mark'] = resp['invoiceMark']
+    head = invoice['invoice']['invoiceHeader']
     json_name = f"{head['issueDate']}.{head['series']}.{head['aa']}.json"
-    with open(json_name, "w") as outfile:
-        json.dump(inv, outfile, ensure_ascii=False)
-    return inv
+    with open(json_name, "w", encoding='utf-8') as outfile:
+        json.dump(invoice, outfile, ensure_ascii=False)
+    return invoice
 
 
 def post_invoice(api, ihd: InvoiceHead, data):
@@ -55,10 +55,10 @@ def post_invoice(api, ihd: InvoiceHead, data):
 
     xml = create_xml(ihd, data)
 
-    res = api.send_invoices(xml)
+    response = api.send_invoices(xml)
 
-    xmlinvoice2json(xml, res)
-    return res
+    xmlinvoice2json(xml, response)
+    return response
 
 
 if __name__ == '__main__':
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     env.read_env()
 
     user = AadeUser(env.str('TED_USER'), env.str('TED_KEY'))
-    api = AadeApi(AADE_URL_TEST, user)
+    test_api = AadeApi(AADE_URL_TEST, user)
     ldt = par.InvData([
         par.LData('category1_2', 'E3_561_001', 127, 1),
         par.LData('category1_2', 'E3_561_002', 12, 2),
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     ])
     ihead = InvoiceHead(env.str('TED_AFM'), '2023-02-11', '0',
                         '1.1', '0', '43', env.str('TEST_AFM'))
-    res = post_invoice(api, ihead, ldt)
+    res = post_invoice(test_api, ihead, ldt)
     print(res)
     # print(api.cancel_invoice('400001904257340'))
     # booki = api.request_my_income('2023-01-01', '2023-02-28')

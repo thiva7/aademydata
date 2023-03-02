@@ -38,16 +38,16 @@ def xml_income_classification(parent, typ, category, amount):
 
 
 def xml_invoice_summary(parent, val, held, ded, gross):
-    sum = ET.SubElement(parent, "invoiceSummary")
-    ET.SubElement(sum, "totalNetValue").text = val
-    ET.SubElement(sum, "totalVatAmount").text = '0.00'
-    ET.SubElement(sum, "totalWithheldAmount").text = held
-    ET.SubElement(sum, "totalFeesAmount").text = '0.00'
-    ET.SubElement(sum, "totalStampDutyAmount").text = '0.00'
-    ET.SubElement(sum, "totalOtherTaxesAmount").text = '0.00'
-    ET.SubElement(sum, "totalDeductionsAmount").text = ded
-    ET.SubElement(sum, "totalGrossValue").text = gross
-    return sum
+    isum = ET.SubElement(parent, "invoiceSummary")
+    ET.SubElement(isum, "totalNetValue").text = val
+    ET.SubElement(isum, "totalVatAmount").text = '0.00'
+    ET.SubElement(isum, "totalWithheldAmount").text = held
+    ET.SubElement(isum, "totalFeesAmount").text = '0.00'
+    ET.SubElement(isum, "totalStampDutyAmount").text = '0.00'
+    ET.SubElement(isum, "totalOtherTaxesAmount").text = '0.00'
+    ET.SubElement(isum, "totalDeductionsAmount").text = ded
+    ET.SubElement(isum, "totalGrossValue").text = gross
+    return isum
 
 
 def xml_issuer(parent, *, afm, country='GR', branch='1'):
@@ -126,9 +126,9 @@ def create(afm: str, aa: str, date: str, ldata):
 
 
 if __name__ == '__main__':
-    ldata = [
+    test_data = [
         {'val': '900.00', 'typ': 'E3_581_001'},
         # {'val': '240.00', 'typ': 'E3_581_002'},
         # {'val': '100.00', 'typ': 'E3_581_001'}
     ]
-    create('999999999', '17', '2023-02-01', ldata)
+    create('999999999', '17', '2023-02-01', test_data)

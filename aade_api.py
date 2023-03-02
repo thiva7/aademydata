@@ -15,9 +15,9 @@ class AadeApi:
         self.verify = verify
         self.co = co
 
-    @property
-    def afm(self):
-        return self.co.afm
+    # @property
+    # def afm(self):
+    #     return self.co.afm
 
     @property
     def _headers(self):
@@ -30,45 +30,50 @@ class AadeApi:
     def send_invoices(self, xml):
         url = f"{self.url}/SendInvoices"
         res = requests.post(url, headers=self._headers,
-                            data=xml, verify=self.verify)
+                            data=xml, verify=self.verify, timeout=10)
         return res.text
 
     def cancel_invoice(self, mark4canceling):
         url = f"{self.url}/CancelInvoice?mark={mark4canceling}"
-        res = requests.post(url, headers=self._headers, verify=self.verify)
+        res = requests.post(url, headers=self._headers,
+                            verify=self.verify, timeout=10)
         return res.text
 
     def send_income_classification(self):
         url = f"{self.url}/SendIncomeClassification"
-        pass
+        print(url)
 
     def send_expenses_classification(self):
         url = f"{self.url}/SendExpensesClassification"
-        pass
+        print(url)
 
     def request_docs(self, isoapo, isoeos) -> str:
         apo, eos = isodate2gr(isoapo), isodate2gr(isoeos)
         url = f"{self.url}/RequestDocs?mark=1&dateFrom={apo}&dateTo={eos}"
-        res = requests.get(url, headers=self._headers, verify=self.verify)
+        res = requests.get(url, headers=self._headers,
+                           verify=self.verify, timeout=10)
         return res.text
 
     def request_transmitted_docs(self, isoapo, isoeos) -> str:
         """Ελάχιστη τιμή mark: 1"""
         apo, eos = isodate2gr(isoapo), isodate2gr(isoeos)
         url = f"{self.url}/RequestTransmittedDocs?mark=1&dateFrom={apo}&dateTo={eos}"
-        res = requests.get(url, headers=self._headers, verify=self.verify)
+        res = requests.get(url, headers=self._headers,
+                           verify=self.verify, timeout=10)
         return res.text
 
     def request_my_income(self, isoapo, isoeos) -> str:
         apo, eos = isodate2gr(isoapo), isodate2gr(isoeos)
         url = f"{self.url}/RequestMyIncome?dateFrom={apo}&dateTo={eos}"
-        res = requests.get(url, headers=self._headers, verify=self.verify)
+        res = requests.get(url, headers=self._headers,
+                           verify=self.verify, timeout=10)
         return res.text
 
     def request_my_expenses(self, isoapo, isoeos):
         apo, eos = isodate2gr(isoapo), isodate2gr(isoeos)
         url = f"{self.url}/RequestMyExpenses?dateFrom={apo}&dateTo={eos}"
-        res = requests.get(url, headers=self._headers, verify=self.verify)
+        res = requests.get(url, headers=self._headers,
+                           verify=self.verify, timeout=10)
         return res.text
 
     def request_uids(self, isodate):

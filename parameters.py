@@ -7,6 +7,7 @@ class LData:
     ctype: str
     value: float
     vatcat: int
+    vatExc: int
 
     @property
     def vat(self):

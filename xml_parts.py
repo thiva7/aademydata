@@ -28,6 +28,13 @@ def header(parent, *, series, aa, date, typ, currency='EUR'):
     SubElement(head, "currency").text = currency
     return head
 
+def move_purpose( parent, * ,dispatchDate,dispatchTime, vehicleNumber ,  purpose):
+    SubElement(parent, "dispatchDate").text =dispatchDate
+    if dispatchTime != '':
+        SubElement(parent, "dispatchTime").text = dispatchTime
+    SubElement(parent, "vehicleNumber").text = vehicleNumber
+    SubElement(parent, "movePurpose").text = str(purpose)
+
 
 def payment(parent, *, typ, amount, info):
     paymeth = SubElement(parent, "paymentMethods")
@@ -52,6 +59,8 @@ def _details(parent, aa, line: par.LData):
     SubElement(det, "netValue").text = f'{line.value:.2f}'
     SubElement(det, "vatCategory").text = str(line.vatcat)
     SubElement(det, "vatAmount").text = f'{line.vat:.2f}'
+    if line.vatcat == 7: # προσθήκη κατηγορίας απαλλαγής ΦΠΑ για τις εξαιρέσεις
+        SubElement(det, "vatExemptionCategory").text = f'{line.vatExc}'
     income_classification(det, line.ctype, line.ccat, line.value)
     return det
 

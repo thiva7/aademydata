@@ -5,9 +5,9 @@ import parameters as par
 import xml_parts as prt
 from afm_checks import can_be_afm
 from invoice import InvoiceHead
-from settings import AADE_ATTRIBUTES, AADE_URL , forbiddencounterpart, forbiddenMovePurposes
+from settings import AADE_ATTRIBUTES, AADE_URL
 from xml_parse import parse_response, parse_xml_invoice
-
+from helper import forbiddenMovePurposes, forbiddencounterpart
 
 def create_xml(ihd: InvoiceHead, linedata: par.InvData):
     root = ET.Element("InvoicesDoc", attrib=AADE_ATTRIBUTES)
@@ -77,12 +77,14 @@ if __name__ == '__main__':
     test_api = AadeApi(AADE_URL, user , True)
     ldt = par.InvData([
         # par.LData('category1_1', 'E3_561_005', 127, 7, vatExc=1),
-        par.LData('category1_1', 'E3_561_001', value=26.88, vatcat=1, taxType='1', taxTypeCategory='1',
-                  taxTypePrice=1.5),
+        par.LData('category1_1', 'E3_561_001', value=26.88, vatcat=1, taxType='1', taxTypeCategory='16',taxTypePrice=1.5), # με Παρακρατούμενος Φόρος <<ποσό>> 1,5
+        par.LData('category1_1', 'E3_561_001', value=26.88, vatcat=1, taxType='2', taxTypeCategory='4'), # με Τέλη Για μηνιαίο λογαριασμό από 150,01 ευρώ και άνω 20%
+        par.LData('category1_2', 'E3_561_001', value=26.88, vatcat=1), # απλο
+        par.LData('category1_2', 'E3_561_001', value=26.88, vatcat=7 , vatExc=30 ), # με εξαίρεση ΦΠΑ
 
     ])
     # kotsovolos AFM for test is 094077783
-    ihead = InvoiceHead(afm=env.str('AFM'), date='2023-02-11', branch='0', type='1.1', series='AA', aa='119', cafm='094077783')
+    ihead = InvoiceHead(afm=env.str('AFM'), date='2023-02-12', branch='0', type='1.1', series='AA', aa='123', cafm='094077783')
     res = post_invoice(test_api, ihead, ldt)
 
     if '<?xml' in res:

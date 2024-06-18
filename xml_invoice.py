@@ -14,7 +14,7 @@ def create_xml(ihd: InvoiceHead, linedata: par.InvData):
     invoice = ET.SubElement(root, "invoice")
     prt.issuer(invoice, afm=ihd.afm, country='GR', branch=ihd.branch)
     if ihd.type not in forbiddencounterpart: # Αν ο τύπος τιμολογίου επιτρέπει τον αντίστοιχο τύπο αντισυμβαλλόμενου
-        prt.counter_part(invoice, afm=ihd.cafm ,name="name", country='FR', branch='1' , street='Kati',  postalCode='32200', city="chalkida")
+        prt.counter_part(invoice, afm=ihd.cafm ,name="name", country='GR', branch='1' , street='',  postalCode='32200', city="chalkida")
     prt.header(invoice, series=ihd.series, aa=ihd.aa,date=ihd.date, typ=ihd.type, currency='EUR')
 
     # if ihd.type not in forbiddenMovePurposes:
@@ -76,11 +76,13 @@ if __name__ == '__main__':
     user = AadeUser(env.str('SAM_USER'), env.str('SAM_KEY'))
     test_api = AadeApi(AADE_URL, user , True)
     ldt = par.InvData([
-        par.LData('category1_1', 'E3_561_001', 127, 7 , vatExc=1),
-        par.LData('category1_1', 'E3_561_001', 132, 1 , vatExc=''),
+        # par.LData('category1_1', 'E3_561_005', 127, 7, vatExc=1),
+        par.LData('category1_1', 'E3_561_001', value=26.88, vatcat=1, taxType='1', taxTypeCategory='1',
+                  taxTypePrice=1.5),
+
     ])
     # kotsovolos AFM for test is 094077783
-    ihead = InvoiceHead(afm=env.str('AFM'), date='2023-02-11', branch='0', type='1.3', series='AA', aa='104', cafm='094077783')
+    ihead = InvoiceHead(afm=env.str('AFM'), date='2023-02-11', branch='0', type='1.1', series='AA', aa='119', cafm='094077783')
     res = post_invoice(test_api, ihead, ldt)
 
     if '<?xml' in res:

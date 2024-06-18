@@ -67,6 +67,21 @@ def _details(parent, aa, line: par.LData):
     SubElement(det, "netValue").text = f'{line.value:.2f}'
     SubElement(det, "vatCategory").text = str(line.vatcat)
     SubElement(det, "vatAmount").text = f'{line.vat:.2f}'
+    if line.taxType == "1":
+        SubElement(det, "withheldAmount").text = f'{line.taxTypesWithheld:.2f}'
+        SubElement(det, "withheldPercentCategory").text = line.taxTypeCategory
+    elif line.taxType == "2":
+        SubElement(det, "feesAmount").text = f'{line.taxTypesFees:.2f}'
+        SubElement(det, "feesPercentCategory").text = line.taxTypeCategory
+    elif line.taxType == "3":
+        SubElement(det, "stampDutyAmount").text = f'{line.taxTypesStampDuty:.2f}'
+        SubElement(det, "stampDutyPercentCategory").text = line.taxTypeCategory
+    elif line.taxType == "4":
+        SubElement(det, "otherTaxesAmount").text = f'{line.taxTypesOtherTaxes:.2f}'
+        SubElement(det, "otherTaxesPercentCategory").text = line.taxTypeCategory
+    else:
+        pass
+
     if line.vatcat == 7: # προσθήκη κατηγορίας απαλλαγής ΦΠΑ για τις εξαιρέσεις
         SubElement(det, "vatExemptionCategory").text = f'{line.vatExc}'
     income_classification(det, line.ctype, line.ccat, line.value)
@@ -79,15 +94,16 @@ def lines(parent, *, data: par.InvData):
 
 
 def summary(parent, *, data: par.InvData):
+
     isum = SubElement(parent, "invoiceSummary")
     SubElement(isum, "totalNetValue").text = f'{data.total_value:.2f}'
     SubElement(isum, "totalVatAmount").text = f'{data.total_vat:.2f}'
-    SubElement(isum, "totalWithheldAmount").text = '0.00'
-    SubElement(isum, "totalFeesAmount").text = '0.00'
-    SubElement(isum, "totalStampDutyAmount").text = '0.00'
-    SubElement(isum, "totalOtherTaxesAmount").text = '0.00'
+    SubElement(isum, "totalWithheldAmount").text = f'{data.total_withheld:.2f}'
+    SubElement(isum, "totalFeesAmount").text = f'{data.total_fees:.2f}'
+    SubElement(isum, "totalStampDutyAmount").text = f'{data.total_stampDuty:.2f}'
+    SubElement(isum, "totalOtherTaxesAmount").text = f'{data.total_otherTaxes:.2f}'
     SubElement(isum, "totalDeductionsAmount").text = '0.00'
-    SubElement(isum, "totalGrossValue").text = f'{data.total:.2f}'
+    SubElement(isum, "totalGrossValue").text = f'{data.total_gross:.2f}'
     for cat_typ, val in data.total_per_cat.items():
         cat, typ = cat_typ
         income_classification(isum, typ, cat, val)

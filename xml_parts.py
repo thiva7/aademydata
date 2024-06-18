@@ -11,11 +11,19 @@ def issuer(parent, *, afm, country='GR', branch='0'):
     return iss
 
 
-def counter_part(parent, *, afm, country='GR', branch='0'):
+def counter_part(parent, *, afm, name= '' , country='GR', branch='0' , street='', postalCode='', city=''):
     cpart = SubElement(parent, "counterpart")
     SubElement(cpart, "vatNumber").text = afm
     SubElement(cpart, "country").text = country
     SubElement(cpart, "branch").text = branch
+    if country != 'GR' and name != '': # οταν ειναι 1.2 η 1.3 ειναι υποχρεωτικό να υπάρχει το όνομα του συμβαλλόμενου
+        SubElement(cpart, "name").text = name
+    if street != '' and postalCode != '' and city != '':
+        address = SubElement(cpart, "address")
+        SubElement(address, "street").text = street
+        SubElement(address, "postalCode").text = postalCode
+        SubElement(address, "city").text = city
+
     return cpart
 
 

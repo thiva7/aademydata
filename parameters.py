@@ -11,7 +11,10 @@ class LData:
 
     @property
     def vat(self):
-        return round(self.value * FPA[self.vatcat], 2)
+        try:
+            return round(self.value * FPA[self.vatcat], 2)
+        except KeyError:
+            return 0
 
     @property
     def total(self):

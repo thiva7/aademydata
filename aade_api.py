@@ -78,8 +78,12 @@ class AadeApi:
 
     def request_uids(self, isodate):
         xml = self.request_transmitted_docs(isodate, isodate)
-        invoices = xmlp.parse_xml_invoices(xml)
-        return [i['uid'] for i in invoices]
+        if xml.startswith('<?xml'):
+            invoices = xmlp.parse_xml_invoices(xml)
+            return [i['uid'] for i in invoices]
+        else:
+            # is json error response
+            return []
 
 
 def find_send_dublicates(api: AadeApi, apo: str, eos: str) -> dict[str, list]:

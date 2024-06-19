@@ -14,7 +14,7 @@ def create_xml(ihd: InvoiceHead, linedata: par.InvData):
     invoice = ET.SubElement(root, "invoice")
     prt.issuer(invoice, afm=ihd.afm, country='GR', branch=ihd.branch)
     if ihd.type not in forbiddencounterpart: # Αν ο τύπος τιμολογίου επιτρέπει τον αντίστοιχο τύπο αντισυμβαλλόμενου
-        prt.counter_part(invoice, afm=ihd.cafm ,name="name", country='GR', branch='1' , street='',  postalCode='32200', city="chalkida")
+        prt.counter_part(invoice, afm=ihd.cafm ,name="name", country='GR', branch='1' , street='str',  postalCode='32200', city="chalkida")
     prt.header(invoice, series=ihd.series, aa=ihd.aa,date=ihd.date, typ=ihd.type, currency='EUR')
 
     # if ihd.type not in forbiddenMovePurposes:
@@ -75,21 +75,22 @@ if __name__ == '__main__':
 
     user = AadeUser(env.str('SAM_USER'), env.str('SAM_KEY'))
     test_api = AadeApi(AADE_URL, user , True)
-    ldt = par.InvData([
-        # par.LData('category1_1', 'E3_561_005', 127, 7, vatExc=1),
-        par.LData('category1_1', 'E3_561_001', value=26.88, vatcat=1, taxType='1', taxTypeCategory='16',taxTypePrice=1.5), # με Παρακρατούμενος Φόρος <<ποσό>> 1,5
-        par.LData('category1_1', 'E3_561_001', value=26.88, vatcat=1, taxType='2', taxTypeCategory='4'), # με Τέλη Για μηνιαίο λογαριασμό από 150,01 ευρώ και άνω 20%
-        par.LData('category1_2', 'E3_561_001', value=26.88, vatcat=1), # απλο
-        par.LData('category1_2', 'E3_561_001', value=26.88, vatcat=7 , vatExc=30 ), # με εξαίρεση ΦΠΑ
+    ldt = par.InvData(
+        lines=[
+            par.LData('category1_8', 'E3_562', value=26.88, vatcat=4), # απλο
+        ],
+        per_invoice_taxes= [
+            par.TaxData(value=26.88, taxType=1, taxTypeCategory=2),
+        ])
 
-    ])
+
     # kotsovolos AFM for test is 094077783
-    ihead = InvoiceHead(afm=env.str('AFM'), date='2023-02-12', branch='0', type='1.1', series='AA', aa='123', cafm='094077783')
+    ihead = InvoiceHead(afm=env.str('AFM'), date='2023-02-12', branch='0', type='1.1', series='AA', aa='138', cafm='094077783')
     res = post_invoice(test_api, ihead, ldt)
 
     if '<?xml' in res:
         root = ET.fromstring(res)
-        # message = root.find('.//message').text
+        # message = root.find('.//message').text8.2
         status_code = root.find('response/statusCode').text
         if status_code == 'Success':
             # print(res)

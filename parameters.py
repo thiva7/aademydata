@@ -3,6 +3,78 @@ import helper
 from typing import Optional
 
 @dataclass
+class TaxData: # used for in invoice taxes
+    value: float
+    taxType: int
+    taxTypeCategory: int
+    taxTypePrice: Optional[float] = field(default=None)
+    Helper = helper.Helper()
+
+    @property
+    def taxTypesWithheld(self):
+        try:
+            if int(self.taxType) == 1:
+                checkOne = self.Helper.withheld()[int(self.taxTypeCategory)][1]
+
+                if checkOne == 'ποσό':
+                    if self.taxTypePrice is None:
+                        raise ValueError("taxTypePrice is required ")
+                    return round(float(self.taxTypePrice), 2)
+            else:
+                return 0
+            return round(self.value * checkOne, 2)
+        except KeyError:
+            return 0
+
+    @property
+    def taxTypesFees(self):
+        try:
+            if int(self.taxType) == 2:
+                checkOne = self.Helper.Fees()[int(self.taxTypeCategory)][1]
+
+                if checkOne == 'ποσό':
+                    if self.taxTypePrice is None:
+                        raise ValueError("taxTypePrice is required ")
+                    return round(float(self.taxTypePrice), 2)
+            else:
+                return 0
+            return round(self.value * checkOne, 2)
+        except KeyError:
+            return 0
+
+    @property
+    def taxTypesOtherTaxes(self):
+        try:
+            if int(self.taxType) == 3:
+                checkOne = self.Helper.otherTaxes()[int(self.taxTypeCategory)][1]
+                if checkOne == 'ποσό':
+                    if self.taxTypePrice is None:
+                        raise ValueError("taxTypePrice is required ")
+                    return round(float(self.taxTypePrice), 2)
+            else:
+                return 0
+
+            return round(self.value * checkOne, 2)
+        except KeyError:
+            return 0
+
+    @property
+    def taxTypesStampDuty(self):
+        try:
+            if int(self.taxType) == 4:
+                checkOne = self.Helper.stampDuty()[int(self.taxTypeCategory)][1]
+                if checkOne == 'ποσό':
+                    if self.taxTypePrice is None:
+                        raise ValueError("taxTypePrice is required ")
+                    return round(float(self.taxTypePrice), 2)
+            else:
+                return 0
+            return round(self.value * checkOne, 2)
+        except KeyError:
+            return 0
+
+
+@dataclass
 class LData:
     """
     @param ccat: Κατηγορία Εσόδων
@@ -18,7 +90,7 @@ class LData:
         7: ["Άνευ Φ.Π.Α.", 0],
         8: ["Εγγραφές χωρίς ΦΠΑ"],
         9: ["ΦΠΑ συντελεστής 3%"]
-    @param vatExc: Κατηγορία Απαλλαγής ΦΠΑ || πιθανές τιμές 1- 31:
+    @param vatExc: Κατηγορία Απαλλαγής ΦΠΑ || πιθανές τιμές:
         δες στο helper.py τη συνάρτηση vatExemptionCategories()
     @param taxType: Είδος Φόρου || πιθανές τιμές:
         1 = Παρακρατούμενος Φόρος
@@ -34,7 +106,7 @@ class LData:
     value: float
     vatcat: int
     vatExc: Optional[int] = field(default=None)
-    taxType: Optional[int] = field(default=None)
+    taxType: Optional[int] = field(default=0)
     taxTypeCategory: Optional[int] = field(default=None)
     taxTypePrice: Optional[float] = field(default=None)
     Helper = helper.Helper()
@@ -42,7 +114,7 @@ class LData:
     def __post_init__(self):
         if self.vatcat == 7 and (self.vatExc is None or self.vatExc == ''):
             raise ValueError("vatExemptionCategory (vatExc) is required when vatCategory is 7")
-        if self.taxType is not None and self.taxTypeCategory is None:
+        if self.taxType != 0 and self.taxTypeCategory is None:
             raise ValueError("taxTypeCategory is required when taxType is set")
 
     @property
@@ -57,10 +129,10 @@ class LData:
         return round(self.value + self.vat, 2)
 
     @property
-    def taxTypesWithheld(self):
+    def  taxTypesWithheld(self):
         try:
-            if self.taxType == '1':
-                checkOne = self.Helper.withheld()[self.taxTypeCategory][1]
+            if int(self.taxType) == 1:
+                checkOne = self.Helper.withheld()[int(self.taxTypeCategory)][1]
                 if checkOne == 'ποσό':
                     if self.taxTypePrice is None:
                         raise ValueError("taxTypePrice is required ")
@@ -74,23 +146,8 @@ class LData:
     @property
     def taxTypesFees(self):
         try:
-            if self.taxType == '2':
-                checkOne = self.Helper.Fees()[self.taxTypeCategory][1]
-                if checkOne == 'ποσό':
-                    if self.taxTypePrice is None:
-                        raise ValueError("taxTypePrice is required ")
-                    return round(float(self.taxTypePrice), 2)
-            else:
-                return 0
-            return round(self.value * checkOne, 2)
-        except KeyError:
-            return 0
-
-    @property
-    def taxTypesStampDuty(self):
-        try:
-            if self.taxType == '3':
-                checkOne = self.Helper.stampDuty()[self.taxTypeCategory][1]
+            if int(self.taxType) == 2:
+                checkOne = self.Helper.Fees()[int(self.taxTypeCategory)][1]
                 if checkOne == 'ποσό':
                     if self.taxTypePrice is None:
                         raise ValueError("taxTypePrice is required ")
@@ -104,8 +161,8 @@ class LData:
     @property
     def taxTypesOtherTaxes(self):
         try:
-            if self.taxType == '4':
-                checkOne = self.Helper.otherTaxes()[self.taxTypeCategory][1]
+            if int(self.taxType) == 3:
+                checkOne = self.Helper.otherTaxes()[int(self.taxTypeCategory)][1]
                 if checkOne == 'ποσό':
                     if self.taxTypePrice is None:
                         raise ValueError("taxTypePrice is required ")
@@ -117,10 +174,25 @@ class LData:
         except KeyError:
             return 0
 
+    @property
+    def taxTypesStampDuty(self):
+        try:
+            if int(self.taxType) == 4:
+                checkOne = self.Helper.stampDuty()[int(self.taxTypeCategory)][1]
+                if checkOne == 'ποσό':
+                    if self.taxTypePrice is None:
+                        raise ValueError("taxTypePrice is required ")
+                    return round(float(self.taxTypePrice), 2)
+            else:
+                return 0
+            return round(self.value * checkOne, 2)
+        except KeyError:
+            return 0
 
 @dataclass
 class InvData:
     lines: list[LData]
+    per_invoice_taxes: Optional[list[TaxData]] = field(default=None)
 
     @property
     def total_per_cat(self):
@@ -157,6 +229,13 @@ class InvData:
         return round(tval, 2)
 
     @property
+    def total_withheld(self):
+        tval = 0
+        for lin in self.lines:
+            tval += lin.taxTypesWithheld
+        return round(tval, 2)
+
+    @property
     def total_fees(self):
         tval = 0
         for lin in self.lines:
@@ -170,6 +249,7 @@ class InvData:
             tval += lin.taxTypesStampDuty
         return round(tval, 2)
 
+
     @property
     def total_otherTaxes(self):
         tval = 0
@@ -180,5 +260,43 @@ class InvData:
     @property
     def total_gross(self):
         return round(self.total + self.total_fees + self.total_stampDuty + self.total_otherTaxes - self.total_withheld, 2)
+
+    # per invoice taxes start here
+    @property
+    def total_withheld_per_invoice(self):
+        tval = 0
+        if self.per_invoice_taxes is not None:
+            for lin in self.per_invoice_taxes:
+                tval += lin.taxTypesWithheld
+            return round(tval, 2)
+
+    @property
+    def total_fees_per_invoice(self):
+        tval = 0
+        if self.per_invoice_taxes is not None:
+            for lin in self.per_invoice_taxes:
+                tval += lin.taxTypesFees
+            return round(tval, 2)
+
+    @property
+    def total_stampDuty_per_invoice(self):
+        tval = 0
+        if self.per_invoice_taxes is not None:
+            for lin in self.per_invoice_taxes:
+                tval += lin.taxTypesStampDuty
+            return round(tval, 2)
+
+    @property
+    def total_otherTaxes_per_invoice(self):
+        tval = 0
+        if self.per_invoice_taxes is not None:
+            for lin in self.per_invoice_taxes:
+                tval += lin.taxTypesOtherTaxes
+            return round(tval, 2)
+
+    @property
+    def total_gross_per_invoice(self):
+        if self.per_invoice_taxes is not None:
+            return round(self.total + self.total_fees_per_invoice + self.total_stampDuty_per_invoice + self.total_otherTaxes_per_invoice - self.total_withheld_per_invoice, 2)
 
 
